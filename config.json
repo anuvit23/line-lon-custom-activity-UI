@@ -1,0 +1,58 @@
+{
+    "workflowApiVersion": "1.1",
+    "name": "LINE LON",
+    "description": "To setup LINE LON for send message by phone number",
+    "metaData": {
+        "icon": "images/icon.png",
+        "iconSmall": "images/iconSmall.png",
+        "category": "Custom"
+    },
+    "type": "REST",
+    "lang": {
+        "en-US": {
+            "name": "LINE LON",
+            "description": "To setup LINE LON for send message by phone number",
+            "step1Label": "Template Setup"
+        }
+    },
+    "arguments": {
+        "execute": {
+            "inArguments": [],
+            "outArguments": [],
+            "url": "https://line-lon-custom-activity-866c589e48fd.herokuapp.com/execute",
+            "verb": "POST",
+            "useJwt": true
+        }
+    },
+    "configurationArguments": {
+        "applicationExtensionKey": "d977746d-d20b-46e5-b362-702faf7435cc",
+        "save": {
+            "url": "https://line-lon-custom-activity-866c589e48fd.herokuapp.com/save",
+            "verb": "POST",
+            "useJwt": true
+        },
+        "publish": {
+            "url": "https://line-lon-custom-activity-866c589e48fd.herokuapp.com/publish",
+            "verb": "POST",
+            "useJwt": true
+        }
+    },
+    "wizardSteps": [
+        { "label": "Template Setup", "key": "step1"}
+    ],
+    "userInterfaces": {
+        "configModal": {
+            "height": 700,
+            "width": 1000,
+            "fullscreen": false
+        }
+    },
+    "schema": {
+        "arguments": {
+            "execute": {
+                "inArguments": [],
+                "outArguments": []
+            }
+        }
+    }
+}
