@@ -180,6 +180,7 @@ define(['postmonger'], function (Postmonger) {
         connection.trigger('requestSchema');
         connection.on('requestedSchema', function (data) {
             requestSchemaData = data;
+            console.log('requestedSchema: ',requestSchemaData);
             parseEventSchema();
         });
 
