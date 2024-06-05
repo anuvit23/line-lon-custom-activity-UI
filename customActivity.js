@@ -304,7 +304,7 @@ define(['postmonger'], function (Postmonger) {
         // Display loading spinner
         $('#loading-spinner').show();
         // check token by calling API
-        const response = await fetch('https://requestbin.myworkato.com/13lvv011/verify-token', {
+        const response = await fetch('https://line-lon-custom-activity-866c589e48fd.herokuapp.com/verify-token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
