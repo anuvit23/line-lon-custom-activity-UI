@@ -45,6 +45,7 @@ define(['postmonger'], function (Postmonger) {
     // }
     let requestSchemaData;
     let requestedInteractionData;
+    let templateList = [];
 
     $(window).ready(onRender);
     connection.on('initActivity', initialize);
@@ -52,6 +53,7 @@ define(['postmonger'], function (Postmonger) {
 
     // fortesting
     // parseEventSchema();
+    // getTemplates();
 
     function onRender() {
         // JB will respond the first time 'ready' is called with 'initActivity'
@@ -71,6 +73,8 @@ define(['postmonger'], function (Postmonger) {
         //fortesting
         // $('#loading-spinner').hide();
 
+        $('#fail-over-construct').hide();
+
         // Get a reference to the select element
         const fieldSelect = document.getElementById('field-select');
         const formActivity = document.getElementById('form-activity');
@@ -78,38 +82,105 @@ define(['postmonger'], function (Postmonger) {
         const textareaFormElement = document.getElementById('textarea-form-element'); 
         const validateButton = document.getElementById("validate-json-button");
         const validationMessage = document.getElementById("validation-message");
+        const templateSelect = document.getElementById('template-select');
 
-        fieldSelect.addEventListener('change', function () {
-            // Get the selected value
-            const selectedValue = fieldSelect.value;
-            selectedValueMergeField = selectedValue !== '' ? '%%' + selectedValue + '%%' : '';
+        // fieldSelect.addEventListener('change', function () {
+        //     // Get the selected value
+        //     const selectedValue = fieldSelect.value;
+        //     selectedValueMergeField = selectedValue !== '' ? '%%' + selectedValue + '%%' : '';
 
-            // Change value of input id merge-field-value
-            document.getElementById('merge-field-value').value = selectedValueMergeField;
-        });
+        //     // Change value of input id merge-field-value
+        //     document.getElementById('merge-field-value').value = selectedValueMergeField;
+        // });
 
         formActivity.addEventListener('submit', function (e) {
             e.preventDefault();
             save();
         });
 
-        validateButton.addEventListener("click", () => {
-            const jsonInput = jsonTextArea.value;
-            const isValid = validateJSONFormat(jsonInput);
+        // validateButton.addEventListener("click", () => {
+        //     const jsonInput = jsonTextArea.value;
+        //     const isValid = validateJSONFormat(jsonInput);
 
-            if (isValid) {
-                // Valid JSON format
-                validationMessage.textContent = "Valid JSON format!";
-                validationMessage.classList.add('slds-text-color_success');
-                validationMessage.classList.remove('slds-text-color_error');
-                textareaFormElement.classList.remove('slds-has-error');
-            } else {
-                // Invalid JSON format
-                validationMessage.textContent = "Invalid JSON format!";
-                validationMessage.classList.add('slds-text-color_error');
-                validationMessage.classList.remove('slds-text-color_success');
-                textareaFormElement.classList.add('slds-has-error');
+        //     if (isValid) {
+        //         // Valid JSON format
+        //         validationMessage.textContent = "Valid JSON format!";
+        //         validationMessage.classList.add('slds-text-color_success');
+        //         validationMessage.classList.remove('slds-text-color_error');
+        //         textareaFormElement.classList.remove('slds-has-error');
+        //     } else {
+        //         // Invalid JSON format
+        //         validationMessage.textContent = "Invalid JSON format!";
+        //         validationMessage.classList.add('slds-text-color_error');
+        //         validationMessage.classList.remove('slds-text-color_success');
+        //         textareaFormElement.classList.add('slds-has-error');
+        //     }
+        // });
+
+        templateSelect.addEventListener('change', function () {
+            
+            console.log('Template selected >>', templateList.find(template => template.id === templateSelect.value));
+
+            $('#fail-over-construct').hide();
+            const messageConstruct = document.getElementById('message-construct');
+            messageConstruct.innerHTML = '';
+            const templateIndexValues = templateList.find(template => template.id === templateSelect.value)?.values;
+
+            if(templateIndexValues && Object.keys(templateIndexValues).length) {
+                $('#fail-over-construct').show();
+                const checkboxFailOver = document.getElementById('checkbox-fail-over');
+                // uncheck
+                checkboxFailOver.checked = false;
             }
+
+            for(let field in templateIndexValues){
+                const inputEle = document.createElement('input');
+                inputEle.type = 'text';
+                inputEle.id = field+'-index';
+                inputEle.name = field+'-index';
+                inputEle.readOnly = true;
+                inputEle.value = field;
+                inputEle.className = 'slds-input';
+
+                const formEleControl = document.createElement('div');
+                formEleControl.className = 'slds-form-element__control';
+                formEleControl.appendChild(inputEle);
+
+                const divEleContainer = document.createElement('div');
+                divEleContainer.className = 'slds-form-element';
+                divEleContainer.appendChild(formEleControl);
+
+                const divCol1Ele = document.createElement('div');
+                divCol1Ele.className = 'slds-col';
+                divCol1Ele.appendChild(divEleContainer);
+
+                const divCol2Ele = document.createElement('div');
+                divCol2Ele.className = 'slds-col';
+
+                const selectFormControlEle = document.createElement('div');
+                selectFormControlEle.className = 'slds-form-element__control';
+                const sldsSelectContainer = document.createElement('div');
+                sldsSelectContainer.className = 'slds-select_container';
+
+                // display field select list
+                const selectEle = document.createElement('select');
+                selectEle.id = field + '-field';
+                selectEle.className = 'slds-select';
+                selectEle.innerHTML = '<option value="">Select Field</option>' +
+                fieldSelectList.map(field => {
+                    return `<option value="${field.value}">${field.label}</option>`;
+                });
+                sldsSelectContainer.appendChild(selectEle);
+                selectFormControlEle.appendChild(sldsSelectContainer);
+                divCol2Ele.appendChild(selectFormControlEle);
+
+                const divRowEle = document.createElement('div');
+                divRowEle.className = 'slds-grid slds-gutters slds-m-bottom_x-small';
+                divRowEle.appendChild(divCol1Ele);
+                divRowEle.appendChild(divCol2Ele);
+
+                messageConstruct.appendChild(divRowEle);
+            };
         });
 
     }
@@ -132,6 +203,7 @@ define(['postmonger'], function (Postmonger) {
             payload = data;
         }
         await checkToken();
+        await getTemplates();
 
         initialLoad(data);
         triggerEventsAndStoreData();
@@ -250,6 +322,48 @@ define(['postmonger'], function (Postmonger) {
             return true;
         } catch (error) {
             return false;
+        }
+    }
+
+    async function getTemplates() {
+        // check token by calling API
+        const response = await fetch('https://line-lon-custom-activity-866c589e48fd.herokuapp.com/templates', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).catch(error => console.error('Error:', error));
+        console.log('Templates Response >>', response);
+
+        //fortesting
+        // const response = {
+        //     "success": "true",
+        //     "data": [
+        //         {
+        //             "id": "TestTemplate",
+        //             "values": {
+        //               "Name": "",
+        //               "Phone": ""
+        //             }
+        //         },
+        //         {
+        //             "id": "TestTemplate2",
+        //             "values": {
+        //               "Name": "",
+        //               "Phone": ""
+        //             }
+        //           }
+        //     ]
+        // };
+
+        if (response.success) {
+            templateList = response.data;
+            const templateSelect = document.getElementById('template-select');
+
+            templateSelect.innerHTML = `<option value="">Select Template</option>` +
+            templateList.map(template => {
+                return `<option value="${template.id}">${template.id}</option>`;
+            });
         }
     }
 });
