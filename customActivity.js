@@ -311,7 +311,8 @@ define(['postmonger'], function (Postmonger) {
             },
             body: JSON.stringify({ token: payload?.configurationArguments?.applicationExtensionKey }),
         }).catch(error => console.error('Error:', error));
-        console.log('Response >>', response);
+        const resBody = await response.json();
+        console.log('Response >>', resBody);
         // Hide loading spinner
         $('#loading-spinner').hide();
     }
@@ -333,7 +334,8 @@ define(['postmonger'], function (Postmonger) {
                 'Content-Type': 'application/json',
             },
         }).catch(error => console.error('Error:', error));
-        console.log('Templates Response >>', response);
+        const resBody = await response.json(); 
+        console.log('Templates Response >>', resBody);
 
         //fortesting
         // const response = {
@@ -356,8 +358,8 @@ define(['postmonger'], function (Postmonger) {
         //     ]
         // };
 
-        if (response.success) {
-            templateList = response.data;
+        if (resBody.success) {
+            templateList = resBody.data;
             const templateSelect = document.getElementById('template-select');
 
             templateSelect.innerHTML = `<option value="">Select Template</option>` +
