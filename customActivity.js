@@ -311,8 +311,7 @@ define(['postmonger'], function (Postmonger) {
             },
             body: JSON.stringify({ token: payload?.configurationArguments?.applicationExtensionKey }),
         }).catch(error => console.error('Error:', error));
-        const resBody = await response.json();
-        console.log('Response >>', resBody);
+
         // Hide loading spinner
         $('#loading-spinner').hide();
     }
