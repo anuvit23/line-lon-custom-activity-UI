@@ -12,9 +12,9 @@ let failOverRequest = {
 define(['postmonger'], function (Postmonger) {
     'use strict';
 
-    let connection = new (new window.MockPostmonger()).Session(); // fortesting
+    // let connection = new (new window.MockPostmonger()).Session(); // fortesting
 
-    // let connection = new Postmonger.Session();
+    let connection = new Postmonger.Session();
     let authTokens = {};
     let payload = {};
 
