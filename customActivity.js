@@ -83,6 +83,7 @@ define(['postmonger'], function (Postmonger) {
         const validateButton = document.getElementById("validate-json-button");
         const validationMessage = document.getElementById("validation-message");
         const templateSelect = document.getElementById('template-select');
+        const failOverTemplateSelect = document.getElementById('fail-over-template-select');
 
         // fieldSelect.addEventListener('change', function () {
         //     // Get the selected value
@@ -131,7 +132,13 @@ define(['postmonger'], function (Postmonger) {
                 const checkboxFailOver = document.getElementById('checkbox-fail-over');
                 // uncheck
                 checkboxFailOver.checked = false;
+                $('#fail-over-message').hide();
             }
+
+            const fieldListSelectOptionsHTML = '<option value="">Select Field</option>' +
+            fieldSelectList.map(field => {
+                return `<option value="${field.value}">${field.label}</option>`;
+            });
 
             for(let field in templateIndexValues){
                 const inputEle = document.createElement('input');
@@ -166,10 +173,7 @@ define(['postmonger'], function (Postmonger) {
                 const selectEle = document.createElement('select');
                 selectEle.id = field + '-field';
                 selectEle.className = 'slds-select';
-                selectEle.innerHTML = '<option value="">Select Field</option>' +
-                fieldSelectList.map(field => {
-                    return `<option value="${field.value}">${field.label}</option>`;
-                });
+                selectEle.innerHTML = fieldListSelectOptionsHTML;
                 sldsSelectContainer.appendChild(selectEle);
                 selectFormControlEle.appendChild(sldsSelectContainer);
                 divCol2Ele.appendChild(selectFormControlEle);
@@ -180,6 +184,66 @@ define(['postmonger'], function (Postmonger) {
                 divRowEle.appendChild(divCol2Ele);
 
                 messageConstruct.appendChild(divRowEle);
+            };
+        });
+
+        failOverTemplateSelect.addEventListener('change', function () {
+            console.log('Fail Over Template selected >>', templateList.find(template => template.id === templateSelect.value));
+
+            const failOverMessageConstruct = document.getElementById('fail-over-message-construct');
+            failOverMessageConstruct.innerHTML = '';
+
+            const failOverTemplateIndexValues = templateList.find(template => template.id === failOverTemplateSelect.value)?.values;
+
+            const fieldListSelectOptionsHTML = '<option value="">Select Field</option>' +
+            fieldSelectList.map(field => {
+                return `<option value="${field.value}">${field.label}</option>`;
+            });
+
+            for(let field in failOverTemplateIndexValues){
+                const inputEle = document.createElement('input');
+                inputEle.type = 'text';
+                inputEle.id = field+'-index';
+                inputEle.name = field+'-index';
+                inputEle.readOnly = true;
+                inputEle.value = field;
+                inputEle.className = 'slds-input';
+
+                const formEleControl = document.createElement('div');
+                formEleControl.className = 'slds-form-element__control';
+                formEleControl.appendChild(inputEle);
+
+                const divEleContainer = document.createElement('div');
+                divEleContainer.className = 'slds-form-element';
+                divEleContainer.appendChild(formEleControl);
+
+                const divCol1Ele = document.createElement('div');
+                divCol1Ele.className = 'slds-col';
+                divCol1Ele.appendChild(divEleContainer);
+
+                const divCol2Ele = document.createElement('div');
+                divCol2Ele.className = 'slds-col';
+
+                const selectFormControlEle = document.createElement('div');
+                selectFormControlEle.className = 'slds-form-element__control';
+                const sldsSelectContainer = document.createElement('div');
+                sldsSelectContainer.className = 'slds-select_container';
+
+                // display field select list
+                const selectEle = document.createElement('select');
+                selectEle.id = field + '-field';
+                selectEle.className = 'slds-select';
+                selectEle.innerHTML = fieldListSelectOptionsHTML;
+                sldsSelectContainer.appendChild(selectEle);
+                selectFormControlEle.appendChild(sldsSelectContainer);
+                divCol2Ele.appendChild(selectFormControlEle);
+
+                const divRowEle = document.createElement('div');
+                divRowEle.className = 'slds-grid slds-gutters slds-m-bottom_x-small';
+                divRowEle.appendChild(divCol1Ele);
+                divRowEle.appendChild(divCol2Ele);
+
+                failOverMessageConstruct.appendChild(divRowEle);
             };
         });
 
@@ -214,6 +278,7 @@ define(['postmonger'], function (Postmonger) {
      * The config.json will be updated here if there are any updates to be done via Front End UI
      */
     function save() {
+        return;
         const inArguments = [];
         let attributesMapping = {};
         attributesMapping['activity_id'] = "{{Activity.Id}}";
@@ -337,7 +402,7 @@ define(['postmonger'], function (Postmonger) {
         console.log('Templates Response >>', resBody);
 
         //fortesting
-        // const response = {
+        // const resBody = {
         //     "success": "true",
         //     "data": [
         //         {
@@ -360,11 +425,21 @@ define(['postmonger'], function (Postmonger) {
         if (resBody.success) {
             templateList = resBody.data;
             const templateSelect = document.getElementById('template-select');
-
-            templateSelect.innerHTML = `<option value="">Select Template</option>` +
+            const failOverTemplateSelect = document.getElementById('fail-over-template-select');
+            
+            templateSelect.innerHTML = failOverTemplateSelect.innerHTML = `<option value="">Select Template</option>` +
             templateList.map(template => {
                 return `<option value="${template.id}">${template.id}</option>`;
             });
         }
     }
 });
+
+function checkFailOverMessage() {
+    const checkboxFailOver = document.getElementById('checkbox-fail-over');
+    if(checkboxFailOver.checked){
+        $('#fail-over-message').show();
+    }else{
+        $('#fail-over-message').hide();
+    }
+}
