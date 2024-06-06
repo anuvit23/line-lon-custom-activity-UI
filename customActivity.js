@@ -12,9 +12,9 @@ let failOverRequest = {
 define(['postmonger'], function (Postmonger) {
     'use strict';
 
-    // let connection = new (new window.MockPostmonger()).Session(); // fortesting
+    let connection = new (new window.MockPostmonger()).Session(); // fortesting
 
-    let connection = new Postmonger.Session();
+    // let connection = new Postmonger.Session();
     let authTokens = {};
     let payload = {};
 
@@ -133,11 +133,14 @@ define(['postmonger'], function (Postmonger) {
         await checkToken();
         await getTemplates();
 
-        initialLoad(data);
         connection.trigger('requestSchema');
         connection.on('requestedSchema', parseEventSchema);
         connection.trigger('requestInteraction');
         connection.on('requestedInteraction', parseEventInteraction);
+
+        setTimeout(() => {
+            initialLoad(data);
+        }, 100);
     }
 
     /**

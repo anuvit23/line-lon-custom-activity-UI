@@ -20,10 +20,9 @@ window.MockSession = class {
                                 inArguments: [
                                     {
                                         "data": {
-                                            "name": "{{Event.DEAudience-xx.\"name\"}}",
-                                            "email": "{{Event.DEAudience-xx.\"email\"}}",
-                                            "mobile": "{{Event.DEAudience-xx.\"mobile\"}}",
-                                            "policyno": "{{Event.DEAudience-xx.\"policyno\"}}"
+                                            "name": '{{Event.DEAudience-xx."Name"}}',
+                                            "mobile": '{{Event.DEAudience-xx."Mobile"}}',
+                                            "birthdate": '{{Event.DEAudience-xx."Birth Date"}}'
                                         },
                                         "messageRequest": {
                                             "templateCd": "LONPRBeforeBill001",
