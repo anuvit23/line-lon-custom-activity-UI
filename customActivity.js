@@ -12,53 +12,19 @@ let failOverRequest = {
 define(['postmonger'], function (Postmonger) {
     'use strict';
 
+    // let connection = new (new window.MockPostmonger()).Session(); // fortesting
+
     let connection = new Postmonger.Session();
     let authTokens = {};
     let payload = {};
 
     // Configuration variables
     let requestSchemaData;
-    // fortesting
-    // let requestSchemaData = {
-    //     schema: [
-    //         {
-    //             "key": "Event.DEAudience-d0520bf9-3185-7a72-5b31-2af2245c61a9.Name",
-    //             "name": "Name",
-    //             "type": "Text",
-    //             "length": 50,
-    //             "default": null,
-    //             "isNullable": null,
-    //             "isPrimaryKey": null
-    //         },
-    //         {
-    //             "key": "Event.DEAudience-d0520bf9-3185-7a72-5b31-2af2245c61a9.Mobile",
-    //             "name": "Mobile",
-    //             "type": "Text",
-    //             "length": 50,
-    //             "default": null,
-    //             "isNullable": null,
-    //             "isPrimaryKey": null
-    //         },
-    //         {
-    //             "key": "Event.DEAudience-d0520bf9-3185-7a72-5b31-2af2245c61a9.Birth Date",
-    //             "name": "Birth Date",
-    //             "type": "Date",
-    //             "length": null,
-    //             "default": null,
-    //             "isNullable": null,
-    //             "isPrimaryKey": null
-    //         }
-    //     ]
-    // }
     let requestedInteractionData;
 
     $(window).ready(onRender);
     connection.on('initActivity', initialize);
     connection.on('clickedNext', save); //Save function within MC
-
-    // fortesting
-    // parseEventSchema(requestSchemaData);
-    // initialize(payload);
 
     function onRender() {
         // JB will respond the first time 'ready' is called with 'initActivity'

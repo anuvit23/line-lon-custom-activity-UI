@@ -1,6 +1,14 @@
-const mockPostmonger = {
-    Session: function() {
-        this.on = function(eventName, callback) {
+// mockPostmonger.js
+
+window.MockSession = class {
+    constructor() {
+        // Initialize your mock session here
+        this.events = {};
+    }
+
+    on(eventName, callback) {
+        let ignoreEvents = ['clickedNext'];
+        if (!ignoreEvents.includes(eventName)) {
             let mockData = {};
 
             switch (eventName) {
@@ -17,14 +25,14 @@ const mockPostmonger = {
                                             "mobile": "{{Event.DEAudience-xx.\"mobile\"}}",
                                             "policyno": "{{Event.DEAudience-xx.\"policyno\"}}"
                                         },
-                                        "messageRequest":{
-                                            "templateCd": "TestTemplate",
+                                        "messageRequest": {
+                                            "templateCd": "LONPRBeforeBill001",
                                             "parameterMap": {
                                                 "mobileNo": "mobile",
                                             }
                                         },
                                         "failOverRequest": {
-                                            "templateCd": "TestTemplate2",
+                                            "templateCd": "SMSPRBeforeBill002",
                                             "checked": true,
                                             "parameterMap": {
                                                 "mobileNo": "mobile",
@@ -105,11 +113,20 @@ const mockPostmonger = {
 
             // Trigger the callback with the mock data
             setTimeout(() => callback(mockData), 100); // Simulate a short delay
-        };
+        }
 
-        this.trigger = function (eventName, data) {
-          // Do nothing in the mock, or you can add logging for debugging
-          console.log(`Mock Postmonger: Event triggered - ${eventName}`, data);
-        };
+    }
+
+    trigger(event, data) {
+        if (this.events[event]) {
+            this.events[event](data);
+        }
     }
 };
+
+window.MockPostmonger = class {
+    constructor() {
+        this.events = {};
+        this.Session = window.MockSession;
+    }
+}
