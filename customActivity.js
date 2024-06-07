@@ -165,7 +165,7 @@ define(['postmonger'], function (Postmonger) {
         console.log('failOverRequest: ', failOverRequest);
 
         let testSendInput = $("#test-send-input").val();
-        let lineAccountSelect = $("line-account-select").val();
+        let lineAccountSelect = $("#line-account-select").val();
         payload['arguments'] = payload['arguments'] || {};
         payload['arguments'].execute = payload['arguments'].execute || {};
         const inArguments = [];
@@ -275,6 +275,15 @@ define(['postmonger'], function (Postmonger) {
         const messageConstruct = document.getElementById('message-construct');
         messageConstruct.innerHTML = '';
 
+        const templateIndexRecipient = selectedTemplateItem?.recipient;
+        if(templateIndexRecipient && Object.keys(templateIndexRecipient).length) {
+            messageRequest.recipient = {
+                ...templateIndexRecipient,
+                ...messageRequest.recipient,
+            };
+        }
+        messageConstruct.appendChild(constructMappingElement(templateIndexRecipient, messageRequest.recipient, 'recipient'));
+
         const templateIndexValues = selectedTemplateItem?.values;
         if(templateIndexValues && Object.keys(templateIndexValues).length) {
             $('#fail-over-construct').show();
@@ -304,6 +313,15 @@ define(['postmonger'], function (Postmonger) {
         const failOverMessageConstruct = document.getElementById('fail-over-message-construct');
         failOverMessageConstruct.innerHTML = '';
 
+        const failOverTemplateIndexRecipient = selectedTemplateItem?.recipient;
+        if(failOverTemplateIndexRecipient && Object.keys(failOverTemplateIndexRecipient).length) {
+            failOverRequest.recipient = {
+                ...failOverTemplateIndexRecipient,
+                ...failOverRequest.recipient,
+            };
+        }
+        failOverMessageConstruct.appendChild(constructMappingElement(failOverTemplateIndexRecipient, failOverRequest.recipient, 'failoverRecipient'))
+
         const failOverTemplateIndexValues = selectedTemplateItem?.values;
 
         if(failOverTemplateIndexValues && Object.keys(failOverTemplateIndexValues).length) {
@@ -314,7 +332,7 @@ define(['postmonger'], function (Postmonger) {
             }
         }
 
-        failOverMessageConstruct.appendChild(constructMappingElement(failOverTemplateIndexValues, failOverRequest.parameterMap, 'failoverRequest'))
+        failOverMessageConstruct.appendChild(constructMappingElement(failOverTemplateIndexValues, failOverRequest.parameterMap, 'failoverParameterMap'));
 
         console.log('messageRequest: ',messageRequest);
         console.log('failOverRequest: ', failOverRequest);

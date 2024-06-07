@@ -20,21 +20,42 @@ window.MockSession = class {
                                 inArguments: [
                                     {
                                         "data": {
-                                            "name": '{{Event.DEAudience-xx."Name"}}',
-                                            "mobile": '{{Event.DEAudience-xx."Mobile"}}',
-                                            "birthdate": '{{Event.DEAudience-xx."Birth Date"}}'
+                                            "contactid": '{{Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408."Contact Id"}}',
+                                            "policyno": '{{Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408."Policy No"}}',
+                                            "insuredname": '{{Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408."Insured Name"}}',
+                                            "premium": '{{Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408."Premium"}}',
+                                            "premiumdate": '{{Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408."Premium Date"}}',
+                                            "premiumlink": '{{Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408."Premium Link"}}',
+                                            "premiumbarcodelink": '{{Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408."Premium Barcode Link"}}',
+                                            "mobileno": '{{Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408."Mobile No"}}'
                                         },
                                         "messageRequest": {
                                             "templateCd": "LONPRBeforeBill001",
+                                            "recipient": {
+                                                "mobileNo": "mobileno",
+                                            },
                                             "parameterMap": {
-                                                "mobileNo": "mobile",
+                                                "policyNo": "policyno",
+                                                "insuredName": "insuredname",
+                                                "premium": "premium",
+                                                "premiumDate": "premiumdate",
+                                                "premiumLink": "premiumlink",
+                                                "premiumBarcodeLink": "premiumbarcodelink"
                                             }
                                         },
                                         "failOverRequest": {
                                             "templateCd": "SMSPRBeforeBill002",
                                             "checked": true,
+                                            "recipient": {
+                                                "mobileNo": "mobileno",
+                                            },
                                             "parameterMap": {
-                                                "mobileNo": "mobile",
+                                                "policyNo": "policyno",
+                                                "insuredName": "insuredname",
+                                                "premium": "premium",
+                                                "premiumDate": "premiumdate",
+                                                "premiumLink": "premiumlink",
+                                                "premiumBarcodeLink": "premiumbarcodelink"
                                             }
                                         },
                                         "testSend": {
@@ -63,32 +84,78 @@ window.MockSession = class {
                 case 'requestedSchema':
                     // Schema of the target data extension
                     mockData = {
+                        
                         schema: [
                             {
-                                "key": "Event.DEAudience-d0520bf9-3185-7a72-5b31-2af2245c61a9.Name",
-                                "name": "Name",
+                                "key": "Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408.Contact Id",
+                                "name": "Contact Id",
                                 "type": "Text",
                                 "length": 50,
                                 "default": null,
                                 "isNullable": null,
-                                "isPrimaryKey": null
+                                "isPrimaryKey": true
                             },
                             {
-                                "key": "Event.DEAudience-d0520bf9-3185-7a72-5b31-2af2245c61a9.Mobile",
-                                "name": "Mobile",
+                                "key": "Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408.Policy No",
+                                "name": "Policy No",
                                 "type": "Text",
                                 "length": 50,
                                 "default": null,
-                                "isNullable": null,
+                                "isNullable": true,
                                 "isPrimaryKey": null
                             },
                             {
-                                "key": "Event.DEAudience-d0520bf9-3185-7a72-5b31-2af2245c61a9.Birth Date",
-                                "name": "Birth Date",
+                                "key": "Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408.Insured Name",
+                                "name": "Insured Name",
+                                "type": "Text",
+                                "length": 50,
+                                "default": null,
+                                "isNullable": true,
+                                "isPrimaryKey": null
+                            },
+                            {
+                                "key": "Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408.Premium",
+                                "name": "Premium",
+                                "type": "Decimal",
+                                "length": 18,
+                                "default": null,
+                                "isNullable": true,
+                                "isPrimaryKey": null
+                            },
+                            {
+                                "key": "Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408.Premium Date",
+                                "name": "Premium Date",
                                 "type": "Date",
                                 "length": null,
                                 "default": null,
-                                "isNullable": null,
+                                "isNullable": true,
+                                "isPrimaryKey": null
+                            },
+                            {
+                                "key": "Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408.Premium Link",
+                                "name": "Premium Link",
+                                "type": "Text",
+                                "length": 250,
+                                "default": null,
+                                "isNullable": true,
+                                "isPrimaryKey": null
+                            },
+                            {
+                                "key": "Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408.Premium Barcode Link",
+                                "name": "Premium Barcode Link",
+                                "type": "Text",
+                                "length": 250,
+                                "default": null,
+                                "isNullable": true,
+                                "isPrimaryKey": null
+                            },
+                            {
+                                "key": "Event.DEAudience-c91c33bc-a7e3-7e2c-5ef8-c386768fb408.Mobile No",
+                                "name": "Mobile No",
+                                "type": "Phone",
+                                "length": 50,
+                                "default": null,
+                                "isNullable": true,
                                 "isPrimaryKey": null
                             }
                         ]
