@@ -133,14 +133,27 @@ define(['postmonger'], function (Postmonger) {
         await checkToken();
         await getTemplates();
 
-        connection.trigger('requestSchema');
-        connection.on('requestedSchema', parseEventSchema);
-        connection.trigger('requestInteraction');
-        connection.on('requestedInteraction', parseEventInteraction);
+        // Create promises for the asynchronous operations
+        const schemaPromise = new Promise((resolve) => {
+            connection.trigger('requestSchema');
+            connection.on('requestedSchema', (schemaData) => {
+                parseEventSchema(schemaData);
+                resolve(); 
+            });
+        });
 
-        setTimeout(() => {
-            initialLoad(data);
-        }, 100);
+        const interactionPromise = new Promise((resolve) => {
+            connection.trigger('requestInteraction');
+            connection.on('requestedInteraction', (interactionData) => {
+                parseEventInteraction(interactionData);
+                resolve(); 
+            });
+        });
+
+        // Wait for both promises to resolve before calling initialLoad
+        await Promise.all([schemaPromise, interactionPromise]); 
+        initialLoad(data);
+
     }
 
     /**
@@ -152,7 +165,7 @@ define(['postmonger'], function (Postmonger) {
         console.log('failOverRequest: ', failOverRequest);
 
         let testSendInput = $("#test-send-input").val();
-        let lineAccountSelect = $("line-accout-select").val();
+        let lineAccountSelect = $("line-account-select").val();
         payload['arguments'] = payload['arguments'] || {};
         payload['arguments'].execute = payload['arguments'].execute || {};
         const inArguments = [];
@@ -196,16 +209,15 @@ define(['postmonger'], function (Postmonger) {
             onChangeTemplateSelect();
 
             failOverRequest = data['arguments'].execute.inArguments[0].failOverRequest;
-            $('#fail-over-template-select').val(messageRequest.templateCd);
+            $('#fail-over-template-select').val(failOverRequest.templateCd);
             onChangeFailOverTemplateSelect();
 
             document.getElementById('checkbox-fail-over').checked = failOverRequest.checked;
             checkFailOverMessage();
 
-          
 
             $('#test-send-input').val(data['arguments'].execute.inArguments[0].testSend.phone);
-            $('#line-accout-select').val(data['arguments'].execute.inArguments[0].testSend.lineAccount);
+            $('#line-account-select').val(data['arguments'].execute.inArguments[0].testSend.lineAccount);
    
         }
     };
