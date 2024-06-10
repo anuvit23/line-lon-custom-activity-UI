@@ -58,6 +58,24 @@
                 <div class="slds-card__body slds-card__body_inner">
                     <div class="slds-box slds-m-bottom_x-small">
                         <div class="slds-m-bottom_x-small slds-text-title_bold">LON Template ID</div>
+                        <fieldset class="slds-form-element slds-m-bottom_x-small">
+                            <div class="slds-form-element__horizontal">
+                                <span class="slds-radio">
+                                    <input type="radio" id="radio-template-lon" name="radio-template" checked onchange="onChangeRadioTemplateType('LON')"/>
+                                    <label class="slds-radio__label" for="radio-template-lon">
+                                        <span class="slds-radio_faux"></span>
+                                        <span class="slds-form-element__label">LON</span>
+                                    </label>
+                                </span>
+                                <span class="slds-radio">
+                                    <input type="radio" id="radio-template-sms" name="radio-template" onchange="onChangeRadioTemplateType('SMS')"/>
+                                    <label class="slds-radio__label" for="radio-template-sms">
+                                        <span class="slds-radio_faux"></span>
+                                        <span class="slds-form-element__label">SMS</span>
+                                    </label>
+                                </span>
+                            </div>
+                        </fieldset>
                         <div class="slds-form-element slds-m-bottom_x-small">
                             <div class="slds-form-element__control">
                                 <div class="slds-select_container">
@@ -79,7 +97,8 @@
                         <div class="slds-form-element slds-m-bottom_x-small">
                             <div class="slds-form-element__control">
                                 <div class="slds-checkbox">
-                                    <input type="checkbox" name="checkbox-fail-over" id="checkbox-fail-over" onchange="checkFailOverMessage()"/>
+                                    <input type="checkbox" name="checkbox-fail-over" id="checkbox-fail-over"
+                                        onchange="checkFailOverMessage()" />
                                     <label class="slds-checkbox__label" for="checkbox-fail-over">
                                         <span class="slds-checkbox_faux"></span>
                                         <span class="slds-form-element__label">Fail Over Message</span>
@@ -89,6 +108,24 @@
                         </div>
                         <div id="fail-over-message">
                             <div class="slds-m-bottom_x-small slds-text-title_bold">Fail Over Template ID</div>
+                            <fieldset class="slds-form-element slds-m-bottom_x-small">
+                                <div class="slds-form-element__horizontal">
+                                    <span class="slds-radio">
+                                        <input type="radio" id="radio-fail-over-template-lon" name="radio-fail-over-template" checked onchange="onChangeRadioFailOverTemplateType('LON')"/>
+                                        <label class="slds-radio__label" for="radio-fail-over-template-lon">
+                                            <span class="slds-radio_faux"></span>
+                                            <span class="slds-form-element__label">LON</span>
+                                        </label>
+                                    </span>
+                                    <span class="slds-radio">
+                                        <input type="radio" id="radio-fail-over-template-sms" name="radio-fail-over-template" onchange="onChangeRadioFailOverTemplateType('SMS')"/>
+                                        <label class="slds-radio__label" for="radio-fail-over-template-sms">
+                                            <span class="slds-radio_faux"></span>
+                                            <span class="slds-form-element__label">SMS</span>
+                                        </label>
+                                    </span>
+                                </div>
+                            </fieldset>
                             <div class="slds-form-element slds-m-bottom_x-small">
                                 <div class="slds-form-element__control">
                                     <div class="slds-select_container">

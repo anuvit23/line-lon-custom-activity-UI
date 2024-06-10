@@ -32,7 +32,7 @@ define(['postmonger'], function (Postmonger) {
 
         // if no payload data attribute more than 3 seconds, hide content
         setTimeout(() => {
-            if(Object.keys(payload).length === 0){
+            if (Object.keys(payload).length === 0) {
                 $('#loading-spinner').hide();
                 $('.container').hide();
                 // alert('Cannot use this custom activity. Please try again.');
@@ -54,20 +54,20 @@ define(['postmonger'], function (Postmonger) {
 
     }
 
-    function constructMappingElement(templateIndexValues, parameterMap, elementId){
+    function constructMappingElement(templateIndexValues, parameterMap, elementId) {
 
         const fieldListSelectOptionsHTML = '<option value="">Select Field</option>' +
-        fieldSelectList.map(field => {
-            return `<option value="${field.value}">${field.label}</option>`;
-        });
+            fieldSelectList.map(field => {
+                return `<option value="${field.value}">${field.label}</option>`;
+            });
 
         const messageConstruct = document.createElement('div');
         messageConstruct.id = elementId;
-        for(let field in templateIndexValues){
+        for (let field in templateIndexValues) {
             const inputEle = document.createElement('input');
             inputEle.type = 'text';
-            inputEle.id = field+'-index';
-            inputEle.name = field+'-index';
+            inputEle.id = field + '-index';
+            inputEle.name = field + '-index';
             inputEle.readOnly = true;
             inputEle.value = field;
             inputEle.className = 'slds-input';
@@ -138,7 +138,7 @@ define(['postmonger'], function (Postmonger) {
             connection.trigger('requestSchema');
             connection.on('requestedSchema', (schemaData) => {
                 parseEventSchema(schemaData);
-                resolve(); 
+                resolve();
             });
         });
 
@@ -146,12 +146,12 @@ define(['postmonger'], function (Postmonger) {
             connection.trigger('requestInteraction');
             connection.on('requestedInteraction', (interactionData) => {
                 parseEventInteraction(interactionData);
-                resolve(); 
+                resolve();
             });
         });
 
         // Wait for both promises to resolve before calling initialLoad
-        await Promise.all([schemaPromise, interactionPromise]); 
+        await Promise.all([schemaPromise, interactionPromise]);
         initialLoad(data);
 
     }
@@ -161,7 +161,7 @@ define(['postmonger'], function (Postmonger) {
      * The config.json will be updated here if there are any updates to be done via Front End UI
      */
     function save() {
-        console.log('messageRequest: ',messageRequest);
+        console.log('messageRequest: ', messageRequest);
         console.log('failOverRequest: ', failOverRequest);
 
         let testSendInput = $("#test-send-input").val();
@@ -178,13 +178,13 @@ define(['postmonger'], function (Postmonger) {
         attributesMapping['failOverRequest'] = failOverRequest;
         attributesMapping['data'] = {};
         requestSchemaData['schema'].forEach((schema) => {
-            if(schema.name){
-              let schemaKeyReplaced = schema.key.replace(schema.name, '"'+schema.name+'"');
-              let splitArr = schema.key.toLowerCase().replace(/ /g, '').split(".");
-              attributesMapping['data'][splitArr[splitArr.length - 1]] = '{{'+schemaKeyReplaced+'}}';
+            if (schema.name) {
+                let schemaKeyReplaced = schema.key.replace(schema.name, '"' + schema.name + '"');
+                let splitArr = schema.key.toLowerCase().replace(/ /g, '').split(".");
+                attributesMapping['data'][splitArr[splitArr.length - 1]] = '{{' + schemaKeyReplaced + '}}';
             }
         });
-       
+
         inArguments.push(attributesMapping);
 
         payload['arguments'].execute.inArguments = inArguments;
@@ -205,10 +205,24 @@ define(['postmonger'], function (Postmonger) {
     function initialLoad(data) {
         if (data && data['arguments'] && data['arguments'].execute && data['arguments'].execute.inArguments.length) {
             messageRequest = data['arguments'].execute.inArguments[0].messageRequest;
+
+            const radioTemplateType = document.getElementById('radio-template-'+(messageRequest.type)?.toLowerCase());
+            if (radioTemplateType) {
+                radioTemplateType.checked = true;
+                onChangeRadioTemplateType((messageRequest.type));
+            }
+
             $('#template-select').val(messageRequest.templateCd);
             onChangeTemplateSelect();
 
             failOverRequest = data['arguments'].execute.inArguments[0].failOverRequest;
+
+            const radioFailOverTemplateType = document.getElementById('radio-fail-over-template-'+(failOverRequest.type)?.toLowerCase());
+            if (radioFailOverTemplateType) {
+                radioFailOverTemplateType.checked = true;
+                onChangeRadioFailOverTemplateType((failOverRequest.type));
+            }
+
             $('#fail-over-template-select').val(failOverRequest.templateCd);
             onChangeFailOverTemplateSelect();
 
@@ -218,7 +232,7 @@ define(['postmonger'], function (Postmonger) {
 
             $('#test-send-input').val(data['arguments'].execute.inArguments[0].testSend.phone);
             $('#line-account-select').val(data['arguments'].execute.inArguments[0].testSend.lineAccount);
-   
+
         }
     };
 
@@ -266,7 +280,7 @@ define(['postmonger'], function (Postmonger) {
         const templateSelect = document.getElementById('template-select');
 
         const selectedTemplateItem = templateList.find(template => template.id === templateSelect.value);
-            
+
         console.log('Template selected >>', selectedTemplateItem);
 
         messageRequest.templateCd = selectedTemplateItem?.id;
@@ -276,7 +290,7 @@ define(['postmonger'], function (Postmonger) {
         messageConstruct.innerHTML = '';
 
         const templateIndexRecipient = selectedTemplateItem?.recipient;
-        if(templateIndexRecipient && Object.keys(templateIndexRecipient).length) {
+        if (templateIndexRecipient && Object.keys(templateIndexRecipient).length) {
             messageRequest.recipient = {
                 ...templateIndexRecipient,
                 ...messageRequest.recipient,
@@ -285,7 +299,7 @@ define(['postmonger'], function (Postmonger) {
         messageConstruct.appendChild(constructMappingElement(templateIndexRecipient, messageRequest.recipient, 'recipient'));
 
         const templateIndexValues = selectedTemplateItem?.values;
-        if(templateIndexValues && Object.keys(templateIndexValues).length) {
+        if (templateIndexValues && Object.keys(templateIndexValues).length) {
             $('#fail-over-construct').show();
             const checkboxFailOver = document.getElementById('checkbox-fail-over');
             // uncheck
@@ -314,7 +328,7 @@ define(['postmonger'], function (Postmonger) {
         failOverMessageConstruct.innerHTML = '';
 
         const failOverTemplateIndexRecipient = selectedTemplateItem?.recipient;
-        if(failOverTemplateIndexRecipient && Object.keys(failOverTemplateIndexRecipient).length) {
+        if (failOverTemplateIndexRecipient && Object.keys(failOverTemplateIndexRecipient).length) {
             failOverRequest.recipient = {
                 ...failOverTemplateIndexRecipient,
                 ...failOverRequest.recipient,
@@ -324,7 +338,7 @@ define(['postmonger'], function (Postmonger) {
 
         const failOverTemplateIndexValues = selectedTemplateItem?.values;
 
-        if(failOverTemplateIndexValues && Object.keys(failOverTemplateIndexValues).length) {
+        if (failOverTemplateIndexValues && Object.keys(failOverTemplateIndexValues).length) {
             failOverRequest.templateCd = selectedTemplateItem?.id;
             failOverRequest.parameterMap = {
                 ...failOverTemplateIndexValues,
@@ -334,7 +348,7 @@ define(['postmonger'], function (Postmonger) {
 
         failOverMessageConstruct.appendChild(constructMappingElement(failOverTemplateIndexValues, failOverRequest.parameterMap, 'failoverParameterMap'));
 
-        console.log('messageRequest: ',messageRequest);
+        console.log('messageRequest: ', messageRequest);
         console.log('failOverRequest: ', failOverRequest);
     }
 
@@ -349,7 +363,7 @@ define(['postmonger'], function (Postmonger) {
             },
             body: JSON.stringify({ token: payload?.configurationArguments?.applicationExtensionKey }),
         }).catch(error => console.error('Error:', error));
-    
+
         // Hide loading spinner
         $('#loading-spinner').hide();
     }
@@ -364,7 +378,7 @@ async function getTemplates() {
             'Content-Type': 'application/json',
         },
     }).catch(error => console.error('Error:', error));
-    const resBody = await response.json(); 
+    const resBody = await response.json();
     console.log('Templates Response >>', resBody);
 
     //fortesting
@@ -394,7 +408,7 @@ async function getTemplates() {
         templateList = resBody.data;
         const templateSelect = document.getElementById('template-select');
         const failOverTemplateSelect = document.getElementById('fail-over-template-select');
-        
+
         templateSelect.innerHTML = failOverTemplateSelect.innerHTML = `<option value="">Select Template</option>` +
         templateList.map(template => {
             return `<option value="${template.id}">${template.id}</option>`;
@@ -405,10 +419,10 @@ async function getTemplates() {
 
 function checkFailOverMessage() {
     const checkboxFailOver = document.getElementById('checkbox-fail-over');
-    if(checkboxFailOver.checked){
+    if (checkboxFailOver.checked) {
         $('#fail-over-message').show();
         failOverRequest.checked = true;
-    }else{
+    } else {
         $('#fail-over-message').hide();
         failOverRequest.checked = false;
     }
@@ -421,3 +435,27 @@ function onChangeFieldSelect(parameterMap, field, event) {
 
     console.log(messageRequest);
 }
+
+function onChangeRadioTemplateType(type) {
+    const templateSelect = document.getElementById('template-select');
+
+    templateSelect.innerHTML = `<option value="">Select Template</option>` +
+        templateList.filter(t => t.type == type).map(template => {
+            return `<option value="${template.id}">${template.id}</option>`;
+        });
+
+    messageRequest.type = type;
+}
+
+function onChangeRadioFailOverTemplateType(type) {
+    const failOverTemplateSelect = document.getElementById('fail-over-template-select');
+
+    failOverTemplateSelect.innerHTML = `<option value="">Select Template</option>` +
+        templateList.filter(t => t.type == type).map(template => {
+            return `<option value="${template.id}">${template.id}</option>`;
+        });
+
+    failOverRequest.type = type;
+
+}
+

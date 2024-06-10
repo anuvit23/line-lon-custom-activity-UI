@@ -31,6 +31,7 @@ window.MockSession = class {
                                         },
                                         "messageRequest": {
                                             "templateCd": "LONPRBeforeBill001",
+                                            "type": "LON",
                                             "recipient": {
                                                 "mobileNo": "mobileno",
                                             },
@@ -45,6 +46,7 @@ window.MockSession = class {
                                         },
                                         "failOverRequest": {
                                             "templateCd": "SMSPRBeforeBill002",
+                                            "type": "SMS",
                                             "checked": true,
                                             "recipient": {
                                                 "mobileNo": "mobileno",
