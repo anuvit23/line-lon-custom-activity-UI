@@ -233,6 +233,9 @@ define(['postmonger'], function (Postmonger) {
             $('#test-send-input').val(data['arguments'].execute.inArguments[0].testSend.phone);
             $('#line-account-select').val(data['arguments'].execute.inArguments[0].testSend.lineAccount);
 
+        }else{ // no arguments data
+            onChangeRadioTemplateType('LON');
+            onChangeRadioFailOverTemplateType('SMS');
         }
     };
 
@@ -314,8 +317,6 @@ define(['postmonger'], function (Postmonger) {
         }
         messageConstruct.appendChild(constructMappingElement(templateIndexValues, messageRequest.parameterMap, 'parameterMap'));
 
-        console.log('messageRequest: ', messageRequest);
-        console.log('failOverRequest: ', failOverRequest);
     }
 
     function onChangeFailOverTemplateSelect() {
@@ -432,8 +433,6 @@ function checkFailOverMessage() {
 function onChangeFieldSelect(parameterMap, field, event) {
     const selectedField = event.target.value;
     parameterMap[field] = selectedField;
-
-    console.log(messageRequest);
 }
 
 function onChangeRadioTemplateType(type) {
