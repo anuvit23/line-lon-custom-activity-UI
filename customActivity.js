@@ -9,6 +9,8 @@ let failOverRequest = {
     checked: false,
     parameterMap: {}
 }
+let dataExtensionId = "";
+
 define(['postmonger'], function (Postmonger) {
     'use strict';
 
@@ -122,6 +124,7 @@ define(['postmonger'], function (Postmonger) {
     connection.on('requestedTriggerEventDefinition', function (eventDefinitionModel) {
         if (eventDefinitionModel) {
             console.log('Request Trigger >>>', eventDefinitionModel);
+            dataExtensionId = eventDefinitionModel.dataExtensionId;
         }
     });
 
@@ -206,7 +209,7 @@ define(['postmonger'], function (Postmonger) {
         if (data && data['arguments'] && data['arguments'].execute && data['arguments'].execute.inArguments.length) {
             messageRequest = data['arguments'].execute.inArguments[0].messageRequest;
 
-            const radioTemplateType = document.getElementById('radio-template-'+(messageRequest.type)?.toLowerCase());
+            const radioTemplateType = document.getElementById('radio-template-' + (messageRequest.type)?.toLowerCase());
             if (radioTemplateType) {
                 radioTemplateType.checked = true;
                 onChangeRadioTemplateType((messageRequest.type));
@@ -217,7 +220,7 @@ define(['postmonger'], function (Postmonger) {
 
             failOverRequest = data['arguments'].execute.inArguments[0].failOverRequest;
 
-            const radioFailOverTemplateType = document.getElementById('radio-fail-over-template-'+(failOverRequest.type)?.toLowerCase());
+            const radioFailOverTemplateType = document.getElementById('radio-fail-over-template-' + (failOverRequest.type)?.toLowerCase());
             if (radioFailOverTemplateType) {
                 radioFailOverTemplateType.checked = true;
                 onChangeRadioFailOverTemplateType((failOverRequest.type));
@@ -233,7 +236,7 @@ define(['postmonger'], function (Postmonger) {
             $('#test-send-input').val(data['arguments'].execute.inArguments[0].testSend.phone);
             $('#line-account-select').val(data['arguments'].execute.inArguments[0].testSend.lineAccount);
 
-        }else{ // no arguments data
+        } else { // no arguments data
             onChangeRadioTemplateType('LON');
             onChangeRadioFailOverTemplateType('SMS');
         }
@@ -411,9 +414,9 @@ async function getTemplates() {
         const failOverTemplateSelect = document.getElementById('fail-over-template-select');
 
         templateSelect.innerHTML = failOverTemplateSelect.innerHTML = `<option value="">Select Template</option>` +
-        templateList.map(template => {
-            return `<option value="${template.id}">${template.id}</option>`;
-        });
+            templateList.map(template => {
+                return `<option value="${template.id}">${template.id}</option>`;
+            });
     }
     $('#loading-spinner').hide();
 }
@@ -455,6 +458,43 @@ function onChangeRadioFailOverTemplateType(type) {
         });
 
     failOverRequest.type = type;
+
+}
+
+async function testSend() {
+    const testSendInput = $("#test-send-input").val();
+    const lineAccountSelect = $("#line-account-select").val();
+
+    let attributesMapping = {};
+    attributesMapping['testSend'] = {
+        "phone": testSendInput,
+        "lineAccount": lineAccountSelect,
+        "dataExtensionId": dataExtensionId
+    };
+    attributesMapping['messageRequest'] = messageRequest;
+    attributesMapping['failOverRequest'] = failOverRequest;
+
+    console.log(attributesMapping);
+
+    // get button element by id
+    const testSendButton = document.getElementById('btn-test-send');
+    testSendButton.disabled = true;
+
+    // change label
+    testSendButton.innerHTML = 'Sending...';
+
+    const response = await fetch('https://line-lon-custom-activity-866c589e48fd.herokuapp.com/message/test-send', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(attributesMapping),
+    }).catch(error => console.error('Error:', error)).finally(() => {
+        // change label
+        testSendButton.innerHTML = 'Send';
+        testSendButton.disabled = false;
+    });
+
 
 }
 

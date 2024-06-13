@@ -78,7 +78,7 @@ window.MockSession = class {
                     // Schema of the entry event
                     mockData = {
                         eventDefinitionKey: 'ContactAttributeUpdated',
-                        dataExtensionId: 'DATA_EXTENSION_ID',
+                        dataExtensionId: '611ae355-d723-ef11-ba68-f40343ce89d8',
                         // ... other event definition details ...
                     };
                     break;
