@@ -21,7 +21,7 @@
             "outArguments": [],
             "url": "https://line-lon-custom-activity-866c589e48fd.herokuapp.com/execute",
             "verb": "POST",
-            "useJwt": true
+            "useJwt": false
         }
     },
     "configurationArguments": {
@@ -29,12 +29,12 @@
         "save": {
             "url": "https://line-lon-custom-activity-866c589e48fd.herokuapp.com/save",
             "verb": "POST",
-            "useJwt": true
+            "useJwt": false
         },
         "publish": {
             "url": "https://line-lon-custom-activity-866c589e48fd.herokuapp.com/publish",
             "verb": "POST",
-            "useJwt": true
+            "useJwt": false
         },
         "validate": {
             "url": "https://line-lon-custom-activity-866c589e48fd.herokuapp.com/validate",
