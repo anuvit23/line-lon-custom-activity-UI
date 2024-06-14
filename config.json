@@ -35,6 +35,10 @@
             "url": "https://line-lon-custom-activity-866c589e48fd.herokuapp.com/publish",
             "verb": "POST",
             "useJwt": true
+        },
+        "validate": {
+            "url": "https://line-lon-custom-activity-866c589e48fd.herokuapp.com/validate",
+            "verb": "POST"
         }
     },
     "wizardSteps": [
