@@ -63,6 +63,11 @@ window.MockSession = class {
                                         "testSend": {
                                             "phone": "1234",
                                             "lineAccount": "test"
+                                        },
+                                        "additionalMap": {
+                                            journeyName: 'Test Journey',
+                                            campaignName: 'Test Campaign',
+                                            costCenter: 'Test Cost Center',
                                         }
                                     }
                                 ]
@@ -167,6 +172,7 @@ window.MockSession = class {
                 case 'requestedInteraction':
                     // Data from the journey entry event
                     mockData = {
+                        name: 'Test Journey',
                         key: 'ContactAttributeUpdated',
                         details: {
                             FirstName: 'John',

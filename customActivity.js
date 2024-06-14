@@ -9,7 +9,8 @@ let failOverRequest = {
     checked: false,
     parameterMap: {}
 }
-let dataExtensionId = "";
+let _eventDefinitionModel = {};
+let _requestedInteractionData = {};
 
 define(['postmonger'], function (Postmonger) {
     'use strict';
@@ -22,7 +23,6 @@ define(['postmonger'], function (Postmonger) {
 
     // Configuration variables
     let requestSchemaData;
-    let requestedInteractionData;
 
     $(window).ready(onRender);
     connection.on('initActivity', initialize);
@@ -124,7 +124,7 @@ define(['postmonger'], function (Postmonger) {
     connection.on('requestedTriggerEventDefinition', function (eventDefinitionModel) {
         if (eventDefinitionModel) {
             console.log('Request Trigger >>>', eventDefinitionModel);
-            dataExtensionId = eventDefinitionModel.dataExtensionId;
+            _eventDefinitionModel = eventDefinitionModel;
         }
     });
 
@@ -177,6 +177,11 @@ define(['postmonger'], function (Postmonger) {
             "phone": testSendInput,
             "lineAccount": lineAccountSelect
         };
+        attributesMapping['additionalMap'] = {
+            journeyName: _requestedInteractionData.name,
+            campaignName: document.getElementById('input-campaign-name').value,
+            costCenter: document.getElementById('input-cost-center').value
+        }
         attributesMapping['messageRequest'] = messageRequest;
         attributesMapping['failOverRequest'] = failOverRequest;
         attributesMapping['data'] = {};
@@ -233,8 +238,11 @@ define(['postmonger'], function (Postmonger) {
             checkFailOverMessage();
 
 
-            $('#test-send-input').val(data['arguments'].execute.inArguments[0].testSend.phone);
-            $('#line-account-select').val(data['arguments'].execute.inArguments[0].testSend.lineAccount);
+            $('#test-send-input').val(data['arguments'].execute.inArguments[0].testSend?.phone);
+            $('#line-account-select').val(data['arguments'].execute.inArguments[0].testSend?.lineAccount);
+
+            $('#input-campaign-name').val(data['arguments'].execute.inArguments[0].additionalMap?.campaignName);
+            $('#input-cost-center').val(data['arguments'].execute.inArguments[0].additionalMap?.costCenter);
 
         } else { // no arguments data
             onChangeRadioTemplateType('LON');
@@ -277,9 +285,9 @@ define(['postmonger'], function (Postmonger) {
     }
 
     function parseEventInteraction(data) {
-        requestedInteractionData = data;
+        _requestedInteractionData = data;
 
-        console.log('Interaction >>', requestedInteractionData);
+        console.log('Interaction >>', _requestedInteractionData);
     }
 
     function onChangeTemplateSelect() {
@@ -385,29 +393,6 @@ async function getTemplates() {
     const resBody = await response.json();
     console.log('Templates Response >>', resBody);
 
-    //fortesting
-    // const resBody = {
-    //     "success": "true",
-    //     "data": [
-    //         {
-    //             "id": "TestTemplate",
-    //             "values": {
-    //               "mobileNo": "",
-    //               "Name": "",
-    //               "Phone": ""
-    //             }
-    //         },
-    //         {
-    //             "id": "TestTemplate2",
-    //             "values": {
-    //               "mobileNo": "",
-    //               "Name": "",
-    //               "Phone": ""
-    //             }
-    //           }
-    //     ]
-    // };
-
     if (resBody.success) {
         templateList = resBody.data;
         const templateSelect = document.getElementById('template-select');
@@ -469,10 +454,15 @@ async function testSend() {
     attributesMapping['testSend'] = {
         "phone": testSendInput,
         "lineAccount": lineAccountSelect,
-        "dataExtensionId": dataExtensionId
+        "dataExtensionId": _eventDefinitionModel.dataExtensionId
     };
     attributesMapping['messageRequest'] = messageRequest;
     attributesMapping['failOverRequest'] = failOverRequest;
+    attributesMapping['additionalMap'] = {
+        journeyName: _requestedInteractionData.name,
+        campaignName: document.getElementById('input-campaign-name').value,
+        costCenter: document.getElementById('input-cost-center').value
+    }
 
     console.log(attributesMapping);
 
