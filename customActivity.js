@@ -15,9 +15,9 @@ let _requestedInteractionData = {};
 define(['postmonger'], function (Postmonger) {
     'use strict';
 
-    // let connection = new (new window.MockPostmonger()).Session(); // fortesting
+    let connection = new (new window.MockPostmonger()).Session(); // fortesting
 
-    let connection = new Postmonger.Session();
+    // let connection = new Postmonger.Session();
     let authTokens = {};
     let payload = {};
 
@@ -368,13 +368,7 @@ define(['postmonger'], function (Postmonger) {
         // Display loading spinner
         $('#loading-spinner').show();
         // check token by calling API
-        const response = await fetch('https://line-lon-custom-activity-866c589e48fd.herokuapp.com/verify-token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ token: payload?.configurationArguments?.applicationExtensionKey }),
-        }).catch(error => console.error('Error:', error));
+        const response = await callApi('verify-token', { token: payload?.configurationArguments?.applicationExtensionKey }).catch(error => console.error('Error:', error));
 
         // Hide loading spinner
         $('#loading-spinner').hide();
@@ -384,12 +378,8 @@ define(['postmonger'], function (Postmonger) {
 async function getTemplates() {
     $('#loading-spinner').show();
 
-    const response = await fetch('https://line-lon-custom-activity-866c589e48fd.herokuapp.com/templates', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    }).catch(error => console.error('Error:', error));
+    const response = await callApi('templates', null, 'GET').catch(error => console.error('Error:', error));
+
     const resBody = await response.json();
     console.log('Templates Response >>', resBody);
 
@@ -473,18 +463,58 @@ async function testSend() {
     // change label
     testSendButton.innerHTML = 'Sending...';
 
-    const response = await fetch('https://line-lon-custom-activity-866c589e48fd.herokuapp.com/message/test-send', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(attributesMapping),
-    }).catch(error => console.error('Error:', error)).finally(() => {
+    const resultElement = document.getElementById('test-send-result-box');
+    resultElement.innerHTML = '';
+
+    const response = await callApi('message/test-send', attributesMapping).catch(error => console.error('Error:', error)).finally(() => {
         // change label
         testSendButton.innerHTML = 'Send';
         testSendButton.disabled = false;
     });
 
+    const resBody = await response.json();
+    if(resBody.data?.data) {
+       const data = resBody.data.data;
+       const isSuccess = resBody.data.messageRes?.status?.isSuccess;
+       
+       const resultContainer = document.createElement('div');
+        resultContainer.className = 'slds-box slds-box_x-small slds-theme_shade slds-m-top_small';
 
+        const dl = document.createElement('dl');
+        dl.className = 'slds-dl_inline';
+
+        for(let key in data) {
+            const dt = document.createElement('dt');
+            dt.className = 'slds-dl_inline__label';
+            dt.innerHTML = key+': ';
+
+            const dd = document.createElement('dd');
+            dd.className = 'slds-dl_inline__detail';
+            dd.innerHTML = data[key];
+
+            dl.appendChild(dt);
+            dl.appendChild(dd);
+        }
+
+        const resultTextEle = document.createElement('div');
+        resultTextEle.className = isSuccess ? 'slds-text-color_success' : 'slds-text-color_error';
+        resultTextEle.innerHTML = isSuccess ? 'Test message successfully sent' : 'Failed to send the test message';
+        
+        resultContainer.appendChild(resultTextEle);
+        resultContainer.appendChild(dl);
+        resultElement.appendChild(resultContainer);
+    }
+}
+
+async function callApi(endpoint, body, method = 'POST') {
+    const response = await fetch(`https://line-lon-custom-activity-866c589e48fd.herokuapp.com/${endpoint}`, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: method == 'GET' ? null : JSON.stringify(body),
+    });
+
+    return response;
 }
 
