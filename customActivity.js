@@ -11,6 +11,7 @@ let failOverRequest = {
 }
 let _eventDefinitionModel = {};
 let _requestedInteractionData = {};
+let applicationExtensionKey = '';
 
 define(['postmonger'], function (Postmonger) {
     'use strict';
@@ -133,19 +134,8 @@ define(['postmonger'], function (Postmonger) {
             console.log('Data >>', data);
             payload = data;
         }
-        await checkToken();
-        await getTemplates();
 
-        // Create promises for the asynchronous operations
-        const schemaPromise = new Promise((resolve) => {
-            connection.trigger('requestSchema');
-            connection.on('requestedSchema', (schemaData) => {
-                parseEventSchema(schemaData);
-                resolve();
-            });
-        });
-
-        const interactionPromise = new Promise((resolve) => {
+        await new Promise((resolve) => {
             connection.trigger('requestInteraction');
             connection.on('requestedInteraction', (interactionData) => {
                 parseEventInteraction(interactionData);
@@ -153,8 +143,17 @@ define(['postmonger'], function (Postmonger) {
             });
         });
 
-        // Wait for both promises to resolve before calling initialLoad
-        await Promise.all([schemaPromise, interactionPromise]);
+        await checkToken();
+        await getTemplates();
+
+        await new Promise((resolve) => {
+            connection.trigger('requestSchema');
+            connection.on('requestedSchema', (schemaData) => {
+                parseEventSchema(schemaData);
+                resolve();
+            });
+        });
+
         initialLoad(data);
 
     }
@@ -288,6 +287,11 @@ define(['postmonger'], function (Postmonger) {
         _requestedInteractionData = data;
 
         console.log('Interaction >>', _requestedInteractionData);
+
+        const customActivity = _requestedInteractionData.activities.find(activity => activity.key === payload?.key);
+        if(customActivity) {
+            applicationExtensionKey = customActivity.configurationArguments.applicationExtensionKey;
+        }
     }
 
     function onChangeTemplateSelect() {
@@ -368,7 +372,7 @@ define(['postmonger'], function (Postmonger) {
         // Display loading spinner
         $('#loading-spinner').show();
         // check token by calling API
-        const response = await callApi('verify-token', { token: payload?.configurationArguments?.applicationExtensionKey }).catch(error => console.error('Error:', error));
+        const response = await callApi('sfmc/verify-token', { token: applicationExtensionKey }).catch(error => console.error('Error:', error));
 
         // Hide loading spinner
         $('#loading-spinner').hide();
@@ -378,12 +382,12 @@ define(['postmonger'], function (Postmonger) {
 async function getTemplates() {
     $('#loading-spinner').show();
 
-    const response = await callApi('templates', null, 'GET').catch(error => console.error('Error:', error));
+    const response = await callApi('sfmc/message-template', null, 'GET').catch(error => console.error('Error:', error));
 
     const resBody = await response.json();
     console.log('Templates Response >>', resBody);
 
-    if (resBody.success) {
+    if (resBody.status == "success") {
         templateList = resBody.data;
         const templateSelect = document.getElementById('template-select');
         const failOverTemplateSelect = document.getElementById('fail-over-template-select');

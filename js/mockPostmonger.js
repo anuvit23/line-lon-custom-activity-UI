@@ -15,6 +15,7 @@ window.MockSession = class {
                 case 'initActivity':
                     // Initial payload when the activity is loaded
                     mockData = {
+                        key: 'test-activity',
                         arguments: {
                             execute: {
                                 inArguments: [
@@ -178,7 +179,15 @@ window.MockSession = class {
                             FirstName: 'John',
                             LastName: 'Doe',
                             // ... other interaction data ...
-                        }
+                        },
+                        activities: [
+                            {
+                                key: 'test-activity',
+                                configurationArguments: {
+                                    applicationExtensionKey: 'be8db36a-ac71-45f9-96b6-de072c0819df'
+                                }
+                            },
+                        ],
                     };
                     break;
 
