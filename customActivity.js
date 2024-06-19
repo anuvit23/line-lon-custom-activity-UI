@@ -480,6 +480,7 @@ async function testSend() {
     if(resBody.data?.data) {
        const data = resBody.data.data;
        const isSuccess = resBody.data.messageRes?.status?.isSuccess;
+       const errorMsg = resBody.data.messageRes?.status?.message;
        
        const resultContainer = document.createElement('div');
         resultContainer.className = 'slds-box slds-box_x-small slds-theme_shade slds-m-top_small';
@@ -502,7 +503,7 @@ async function testSend() {
 
         const resultTextEle = document.createElement('div');
         resultTextEle.className = isSuccess ? 'slds-text-color_success' : 'slds-text-color_error';
-        resultTextEle.innerHTML = isSuccess ? 'Test message successfully sent' : 'Failed to send the test message';
+        resultTextEle.innerHTML = isSuccess ? 'Test message successfully sent' : 'Failed to send the test message: '+ errorMsg;
         
         resultContainer.appendChild(resultTextEle);
         resultContainer.appendChild(dl);
@@ -515,6 +516,7 @@ async function callApi(endpoint, body, method = 'POST') {
         method: method,
         headers: {
             'Content-Type': 'application/json',
+            'app-token': applicationExtensionKey
         },
         body: method == 'GET' ? null : JSON.stringify(body),
     });
