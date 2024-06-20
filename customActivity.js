@@ -55,6 +55,8 @@ define(['postmonger'], function (Postmonger) {
         document.getElementById('template-select').addEventListener('change', onChangeTemplateSelect);
         document.getElementById('fail-over-template-select').addEventListener('change', onChangeFailOverTemplateSelect);
 
+        document.getElementById('test-send-input').addEventListener("input", checkPhoneNumber);
+
     }
 
     function constructMappingElement(templateIndexValues, parameterMap, elementId) {
@@ -238,6 +240,7 @@ define(['postmonger'], function (Postmonger) {
 
 
             $('#test-send-input').val(data['arguments'].execute.inArguments[0].testSend?.phone);
+            checkPhoneNumber();
             $('#line-account-select').val(data['arguments'].execute.inArguments[0].testSend?.lineAccount);
 
             $('#input-campaign-name').val(data['arguments'].execute.inArguments[0].additionalMap?.campaignName);
@@ -376,6 +379,25 @@ define(['postmonger'], function (Postmonger) {
 
         // Hide loading spinner
         $('#loading-spinner').hide();
+    }
+
+    function checkPhoneNumber() {
+        const phoneNumber = document.getElementById('test-send-input').value.trim();
+        const resultDiv = document.getElementById('test-send-phone-invalid');
+
+        //Validation patterns (adjust for your needs)
+        const numberPattern = /^\d{8,12}$/; // Example: 555-555-5555
+    
+        if (numberPattern.test(phoneNumber)) {
+            resultDiv.textContent = "";
+            document.getElementById('btn-test-send').disabled = false;
+        } else if (phoneNumber === ""){
+            resultDiv.textContent = ""; //Clear the resultDiv when input is empty.
+            document.getElementById('btn-test-send').disabled = true;
+        } else {
+            resultDiv.textContent = "Invalid phone number";
+            document.getElementById('btn-test-send').disabled = true;
+        }
     }
 });
 
