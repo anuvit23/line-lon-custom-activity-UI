@@ -36,9 +36,8 @@ define(['postmonger'], function (Postmonger) {
         // if no payload data attribute more than 3 seconds, hide content
         setTimeout(() => {
             if (Object.keys(payload).length === 0) {
-                $('#loading-spinner').hide();
                 $('.container').hide();
-                // alert('Cannot use this custom activity. Please try again.');
+                displayError('Custom activity need to run within the Salesforce Marketing Cloud');
             }
         }, 2000);
 
@@ -375,7 +374,19 @@ define(['postmonger'], function (Postmonger) {
         // Display loading spinner
         $('#loading-spinner').show();
         // check token by calling API
-        const response = await callApi('sfmc/verify-token', { token: applicationExtensionKey }).catch(error => console.error('Error:', error));
+        const response = await callApi('sfmc/verify-token', { token: applicationExtensionKey }).catch(error => {
+            displayError(error.message);
+        });
+
+        if(response.status !== 200) {
+            if(response.status === 401) {
+                displayError('Token is invalid');
+            }else if (response.status === 500) {
+                displayError(response.message);
+            }else{
+                displayError('Status: '+response.status+' '+response.statusText);
+            }
+        }
 
         // Hide loading spinner
         $('#loading-spinner').hide();
@@ -404,7 +415,19 @@ define(['postmonger'], function (Postmonger) {
 async function getTemplates() {
     $('#loading-spinner').show();
 
-    const response = await callApi('sfmc/message-template', null, 'GET').catch(error => console.error('Error:', error));
+    const response = await callApi('sfmc/message-template', null, 'GET').catch(error => {
+        displayError(error.message);
+    });
+
+    if(response.status !== 200) {
+        if(response.status === 401) {
+            displayError('Token is invalid');
+        }else if (response.status === 500) {
+            displayError(response.message);
+        }else{
+            displayError('Status: '+response.status+' '+response.statusText);
+        }
+    }
 
     const resBody = await response.json();
     console.log('Templates Response >>', resBody);
@@ -549,5 +572,12 @@ async function callApi(endpoint, body, method = 'POST') {
     });
 
     return response;
+}
+
+function displayError(errorMessage) {
+    $('#loading-spinner').hide();
+    const alertError = document.getElementById('alert-error');
+    alertError.innerHTML = errorMessage;
+    alertError.style.display = 'block';
 }
 
