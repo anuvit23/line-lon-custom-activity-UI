@@ -530,6 +530,11 @@ async function testSend() {
         resultContainer.appendChild(resultTextEle);
         resultContainer.appendChild(dl);
         resultElement.appendChild(resultContainer);
+    }else if (resBody.status == 'error' && resBody.message){
+        const resultTextEle = document.createElement('div');
+        resultTextEle.className = 'slds-text-color_error';
+        resultTextEle.innerHTML = resBody.message;
+        resultElement.appendChild(resultTextEle);
     }
 }
 
