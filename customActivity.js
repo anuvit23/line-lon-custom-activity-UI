@@ -565,7 +565,7 @@ async function callApi(endpoint, body, method = 'POST') {
     const response = await fetch(`https://line-lon-custom-activity-866c589e48fd.herokuapp.com/${endpoint}`, {
         method: method,
         headers: {
-            'Content-Type': 'application/json, Authorization',
+            'Content-Type': 'application/json',
             'app-token': applicationExtensionKey
         },
         body: method == 'GET' ? null : JSON.stringify(body),
