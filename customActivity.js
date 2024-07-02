@@ -561,7 +561,7 @@ async function testSend() {
     }
 }
 
-async function callApi(endpoint, body, method = 'POST') {
+/*async function callApi(endpoint, body, method = 'POST') {
     const response = await fetch(`https://line-lon-custom-activity-866c589e48fd.herokuapp.com/${endpoint}`, {
         method: method,
         headers: {
@@ -572,6 +572,28 @@ async function callApi(endpoint, body, method = 'POST') {
     });
 
     return response;
+}
+*/
+async function callApi(endpoint, body, method = 'POST') {
+    try {
+        const response = await fetch(`https://line-lon-custom-activity-866c589e48fd.herokuapp.com/${endpoint}`, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'app-token': applicationExtensionKey
+            },
+            body: method == 'GET' ? null : JSON.stringify(body),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        return response;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        throw error; // Rethrow the error to propagate it up
+    }
 }
 
 function displayError(errorMessage) {
