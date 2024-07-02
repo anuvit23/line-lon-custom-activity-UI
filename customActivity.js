@@ -397,7 +397,7 @@ define(['postmonger'], function (Postmonger) {
         const resultDiv = document.getElementById('test-send-phone-invalid');
 
         //Validation patterns (adjust for your needs)
-        const numberPattern = /^\d{8,12}$/; // Example: 555-555-5555
+        const numberPattern = /^\d{10}$/; // Example: 555-555-5555
     
         if (numberPattern.test(phoneNumber)) {
             resultDiv.textContent = "";
