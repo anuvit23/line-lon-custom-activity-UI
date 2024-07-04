@@ -115,6 +115,10 @@ define(['postmonger'], function (Postmonger) {
             messageConstruct.appendChild(divRowEle);
         };
 
+        // Add field select list in Party ID
+        const selectionPartyId = document.getElementById('selection-party-id');
+        selectionPartyId.innerHTML = fieldListSelectOptionsHTML;
+
         return messageConstruct;
     }
 
@@ -180,7 +184,8 @@ define(['postmonger'], function (Postmonger) {
         attributesMapping['additionalMap'] = {
             journeyName: _requestedInteractionData.name,
             campaignName: document.getElementById('input-campaign-name').value,
-            costCenter: document.getElementById('input-cost-center').value
+            costCenter: document.getElementById('input-cost-center').value,
+            partyId: document.getElementById('selection-party-id').value
         }
         attributesMapping['messageRequest'] = messageRequest;
         attributesMapping['failOverRequest'] = failOverRequest;
@@ -244,6 +249,7 @@ define(['postmonger'], function (Postmonger) {
 
             $('#input-campaign-name').val(data['arguments'].execute.inArguments[0].additionalMap?.campaignName);
             $('#input-cost-center').val(data['arguments'].execute.inArguments[0].additionalMap?.costCenter);
+            $('#selection-party-id').val(data['arguments'].execute.inArguments[0].additionalMap?.partyId);
 
         } else { // no arguments data
             onChangeRadioTemplateType('LON');
@@ -500,7 +506,8 @@ async function testSend() {
     attributesMapping['additionalMap'] = {
         journeyName: _requestedInteractionData.name,
         campaignName: document.getElementById('input-campaign-name').value,
-        costCenter: document.getElementById('input-cost-center').value
+        costCenter: document.getElementById('input-cost-center').value,
+        partyId: document.getElementById('selection-party-id').value
     }
 
     console.log(attributesMapping);
@@ -515,48 +522,55 @@ async function testSend() {
     const resultElement = document.getElementById('test-send-result-box');
     resultElement.innerHTML = '';
 
-    const response = await callApi('message/test-send', attributesMapping).catch(error => console.error('Error:', error)).finally(() => {
+    const response = await callApi('message/test-send', attributesMapping).finally(() => {
         // change label
         testSendButton.innerHTML = 'Send';
         testSendButton.disabled = false;
     });
 
-    const resBody = await response.json();
-    if(resBody.data?.data) {
-       const data = resBody.data.data;
-       const isSuccess = resBody.data.messageRes?.status?.isSuccess;
-       const errorMsg = resBody.data.messageRes?.status?.message;
-       
-       const resultContainer = document.createElement('div');
-        resultContainer.className = 'slds-box slds-box_x-small slds-theme_shade slds-m-top_small';
+    try {
+        const resBody = await response.json();
+        if(resBody.data?.data) {
+            const data = resBody.data.data;
+            const isSuccess = resBody.data.messageRes?.status?.isSuccess;
+            const errorMsg = resBody.data.messageRes?.status?.message;
+            
+            const resultContainer = document.createElement('div');
+            resultContainer.className = 'slds-box slds-box_x-small slds-theme_shade slds-m-top_small';
 
-        const dl = document.createElement('dl');
-        dl.className = 'slds-dl_inline';
+            const dl = document.createElement('dl');
+            dl.className = 'slds-dl_inline';
 
-        for(let key in data) {
-            const dt = document.createElement('dt');
-            dt.className = 'slds-dl_inline__label';
-            dt.innerHTML = key+': ';
+            for(let key in data) {
+                const dt = document.createElement('dt');
+                dt.className = 'slds-dl_inline__label';
+                dt.innerHTML = key+': ';
 
-            const dd = document.createElement('dd');
-            dd.className = 'slds-dl_inline__detail';
-            dd.innerHTML = data[key];
+                const dd = document.createElement('dd');
+                dd.className = 'slds-dl_inline__detail';
+                dd.innerHTML = data[key];
 
-            dl.appendChild(dt);
-            dl.appendChild(dd);
+                dl.appendChild(dt);
+                dl.appendChild(dd);
+            }
+
+            const resultTextEle = document.createElement('div');
+            resultTextEle.className = isSuccess ? 'slds-text-color_success' : 'slds-text-color_error';
+            resultTextEle.innerHTML = isSuccess ? 'Test message successfully sent' : 'Failed to send the test message: '+ errorMsg;
+            
+            resultContainer.appendChild(resultTextEle);
+            resultContainer.appendChild(dl);
+            resultElement.appendChild(resultContainer);
+        }else if (resBody.status == 'error' && resBody.message){
+            const resultTextEle = document.createElement('div');
+            resultTextEle.className = 'slds-text-color_error';
+            resultTextEle.innerHTML = resBody.message;
+            resultElement.appendChild(resultTextEle);
         }
-
-        const resultTextEle = document.createElement('div');
-        resultTextEle.className = isSuccess ? 'slds-text-color_success' : 'slds-text-color_error';
-        resultTextEle.innerHTML = isSuccess ? 'Test message successfully sent' : 'Failed to send the test message: '+ errorMsg;
-        
-        resultContainer.appendChild(resultTextEle);
-        resultContainer.appendChild(dl);
-        resultElement.appendChild(resultContainer);
-    }else if (resBody.status == 'error' && resBody.message){
+    } catch (error) {
         const resultTextEle = document.createElement('div');
         resultTextEle.className = 'slds-text-color_error';
-        resultTextEle.innerHTML = resBody.message;
+        resultTextEle.innerHTML = error.message;
         resultElement.appendChild(resultTextEle);
     }
 }
@@ -585,9 +599,6 @@ async function callApi(endpoint, body, method = 'POST') {
             body: method == 'GET' ? null : JSON.stringify(body),
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
 
         return response;
     } catch (error) {

@@ -69,6 +69,7 @@ window.MockSession = class {
                                             journeyName: 'Test Journey',
                                             campaignName: 'Test Campaign',
                                             costCenter: 'Test Cost Center',
+                                            partyId: 'contactid'
                                         }
                                     }
                                 ]
